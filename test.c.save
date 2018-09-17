@@ -1,0 +1,28 @@
+FILE * wordList = fopen(argv[0], "r");
+        if(wordList == NULL)
+        {
+            fprintf(stderr, "File not found");
+            return 1;
+        }
+        
+        char * word = malloc(17 * sizeof(char));
+        //memset(word, ' ' , 17); //Set everything to spaces so remaining pad will be spaces
+        //size_t len = 0;
+        //ssize_t read;
+        unsigned char * plainDecrypt = calloc(21, sizeof(char*)); //Initialize a place to store plaintext output. Sized for our 21 character string
+        
+        while(fgets(word, 17, wordList) )
+        {
+	    char* pos = strrchr(word, '\n');
+	    if(pos) *pos= ' ';
+	    unsigned char* key = malloc(16 * sizeof(char));
+	    memcpy(key, word, 16);
+            decrypt(cipher, plainDecrypt, key, iv);
+            
+            if(memcmp(plain, plainDecrypt,21))
+            {
+                printf("Key found! The key is: %s", word);
+                return 0;
+            }
+            memset(word, ' ' , 16);//Return word back to all spaces
+	    free(key); 
