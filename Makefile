@@ -1,5 +1,5 @@
 CC=gcc
-CFLAGS=  -Og -ggdb
+CFLAGS=  
 
 all:
 	@$(CC) $(CFLAGS) getkey.c -o getkey -lcrypto -ldl
