@@ -12,12 +12,12 @@ void handleErrors(void);
 int main (int argc, char** argv)
 {
         unsigned char iv[17];
-        memset(iv, 0 ,17); //Allocates 0's
+        memset(iv, 0 ,17); //Allocates 0's for IV
         unsigned char *plain = "This is a top secret."; //Initialize our plaintext
         //unsigned char cipher[] = {0x8d, 0x20, 0xe5, 0x05, 0x6a, 0x8d, 0x24, 0xd0, 0x46, 0x2c, 0xe7, 0x4e, 0x49, 0x04, 0xc1, 0xb5, 0x13, 0xe1, 0x0d, 0x1d, 0xf4, 0xa2, 0xef, 0x2a, 0xd4, 0x54, 0x0f, 0xae, 0x1c, 0xa0, 0xaa, 0xf9}; // Initialize our cipher
-        unsigned char *cipher =  "8d20e5056a8d24d0462ce74e4904c1b513e10d1df4a2ef2ad4540fae1ca0aaf9";
+        unsigned char *cipher =  "8d20e5056a8d24d0462ce74e4904c1b513e10d1df4a2ef2ad4540fae1ca0aaf9"; //Initialize our ciphertext
         unsigned char encryptBuf[100]; //Initialize a place to store ciphertext output
-        if(argc < 2)
+        if(argc < 2) // No args given
         {
             fprintf(stderr, "No word list argument provided");
             return 1;
@@ -25,7 +25,7 @@ int main (int argc, char** argv)
         ERR_load_crypto_strings();
         OpenSSL_add_all_algorithms();
         OPENSSL_config(NULL);
-        FILE * wordList = fopen(argv[1], "r");
+        FILE * wordList = fopen(argv[1], "r"); //Open wordlist file 
         if(wordList == NULL)
         {
             fprintf(stderr, "File not found");
@@ -33,29 +33,25 @@ int main (int argc, char** argv)
         }
         
         char word[50];
-        //memset(word, ' ' , 17); //Set everything to spaces so remaining pad will be spaces
-        //size_t len = 0;
-        //ssize_t read;
         
         int cipherLength;
-        while(fscanf(wordList, "%s\n", word ) != EOF)
+        while(fscanf(wordList, "%s\n", word ) != EOF)//Get next word from file list
         {
             int i = strlen(word);
-            if(i > 16)
+            if(i > 16) // Go on to next word if bigger than 16
                 continue;
             else 
-                padWord(word);
+                padWord(word);//Pad the word with spaces up to 16
             
-            cipherLength = encrypt(plain,strlen(plain), word, iv, encryptBuf);
+            cipherLength = encrypt(plain,strlen(plain), word, iv, encryptBuf);//Run encryption function
             
-            unsigned char crypto[50];
+            unsigned char crypto[50];//Buffer to hold output from conversion to binary to hex
             for(int i = 0 ; i < cipherLength; i++)
             {
-                sprintf(crypto+i*2, "%02x", encryptBuf[i]);
+                sprintf(crypto+i*2, "%02x", encryptBuf[i]);//Print binary in encryptBuf to hex in crypto
             }
-            crypto[cipherLength*2]  = '\0';
+            crypto[cipherLength*2]  = '\0';//Add terminating character
         
-            //printf("\n Word: %s\nOutput: %s \n Cipher: %s\n",word, crypto, cipher);
             if(0 == strcmp(crypto, cipher))
             {
                 printf("Key found! The key is: %s\n", word);
@@ -63,7 +59,6 @@ int main (int argc, char** argv)
                 ERR_free_strings();
                 return 0;
             }
-            //memset(word, ' ' , 16);//Return word back to all spaces
         }
     printf("\nKey not found!\n");
 	return 0;
